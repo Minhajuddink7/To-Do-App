@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="style.css">
+	<title>Simple To Do Application</title>
+</head>
+<body>
+	<div id="container">
+		<div class="controls">
+			<h1 style="color: rgb(0, 128, 100)">My Awesome To Do</h1>
+			<input type="text" id="input" autofocus >
+			<p style="color:rgb(255, 71, 246)">Enter your todo above</p>
+			<button type="button" id="add">Add To Do</button>
+			<button type="button" id="remove">Remove done To Dos</button>
+			<button type="button" id="removeall">Remove All</button>
+
+
+		</div>
+		<ul id="list">
+			<li class="mycheck">
+				<input type="checkbox" id="check">
+				<label>Learn Front end development</label>
+				
+			</li>
+
+
+			<li class="mycheck">
+				<input type="checkbox" id="check">
+				<label>Do meditation</label>
+
+			</li>
+				<li class="mycheck">
+				<input type="checkbox" id="check">
+				<label>Do Exercise</label>
+
+			</li>
+			</li>
+				<li class="mycheck">
+				<input type="checkbox" id="check">
+				<label>Perform Yoga</label>
+
+			</li>
+
+		</ul>
+	</div>
+	
+	<script src="todo.js"></script>
+</body>
+</html>
