@@ -1,28 +1,290 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-	<meta charset="UTF-8">
-	<link rel="stylesheet" href="style.css">
-	<title>Simple To Do Application</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width" />
+  <title>My To Do App</title>
+  <style>
+    @font-face {
+      font-family: "Sego";
+      src: url("segoe.ttf");
+    }
+
+    :root {
+      --background-color: #2b2b52;
+      --white: #eee;
+    }
+
+    * {
+      margin: 0px;
+      padding: 0px;
+      font-family: Sego;
+      color: #444;
+    }
+
+    body {
+      height: 100%;
+    }
+
+    #add,
+    #remove {
+      padding: 10px 25px;
+
+      margin: 5px auto;
+      border: 0px;
+      display: block;
+
+      color: var(--white);
+    }
+
+    #add {
+      background: #bf800b;
+    }
+
+    #remove {
+      margin-bottom: -5px;
+      background: purple;
+    }
+
+    body {
+      background-color: #222;
+      padding-top: 10px;
+      max-width: 100%;
+      margin-top: 0 auto;
+      height: 100vh;
+      overflow: auto;
+    }
+
+    h2 {
+      text-align: center;
+      color: var(--white);
+      width: 70%;
+      padding: 5px 20px;
+      margin: 10px auto;
+      margin-bottom: 5px;
+      border-radius: 15px;
+      background-color: var(--background-color);
+    }
+
+    .content-box {
+      padding-top: 10px;
+      max-width: 95%;
+      border-radius: 15px;
+      height: auto;
+      background-color: #ccc;
+      margin: 0 auto;
+      background-color: #058077;
+    }
+
+    @media screen and (min-width:576px) and (max-width:900px) {
+      .content-box {
+        width: 60%;
+      }
+
+
+    }
+
+    @media screen and (min-width:900px) {
+      .content-box {
+        width: 40%;
+      }
+
+
+    }
+
+    input[type="text"] {
+      max-width: 90%;
+      height: 40px;
+      padding-left: 15px;
+
+      background-color: var(--white);
+    }
+
+    .add-section {
+      text-align: center;
+
+    }
+
+    .list-box ul {
+      margin: 0px 10%;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+    }
+
+    .list-box li {
+      list-style: none;
+      border: 2px dashed var(--background-color);
+      color: var(--background-color);
+      border-radius: 18px;
+      font-size: 1.2rem;
+      background-color: var(--white);
+      word-wrap: break-word;
+      padding: 10px 20px;
+      margin-bottom: 10px;
+      font-weight: 900;
+    }
+
+    .footer {
+      position: fixed;
+      bottom: 0px;
+      width: 100%;
+      background-color: #ccc;
+      color: #334;
+      font-weight: 900;
+      font-size: 1.1rem;
+      text-align: center;
+    }
+
+    #add:focus,
+    #remove:focus {
+      outline: none;
+    }
+
+    .doneTodo {
+      text-decoration: line-through;
+      color: #c88 !important;
+      background-color: #ddd !important;
+      border: none !important;
+
+    }
+  </style>
 </head>
+
 <body>
-	<div id="container">
-		<div class="controls">
-			<h1 style="color: rgb(0, 128, 100)">My Awesome To Do</h1>
-			<input type="text" id="input" autofocus >
-			<p style="color:rgb(255, 71, 246)">Enter your to-do above</p>
-			<button type="button" id="add">Add To Do</button>
-			<button type="button" id="remove">Remove done To Dos</button>
-			<button type="button" id="removeall">Remove All</button>
 
+  <div class="content-box">
+    <h2>My To Do App</h2>
+    <div class="add-section">
+      <input type="text" id="todo" placeholder="Enter your to do here" autofocus /><br />
+      <button id="add">Add To Do</button>
+      <button id="remove">Remove To Do</button>
+    </div>
+    <div class="list-box">
+      <ul id="todo-list"></ul>
+    </div>
 
-		</div>
-		<ul id="list">
-			
-
-		</ul>
-	</div>
-	
-	<script src="todo.js"></script>
+  </div>
+  <div class="footer">Developed By Minhajuddin</div>
 </body>
+<script>
+  if (document.readyState == "loading") {
+    document.addEventListener("DOMContentLoaded", ready);
+  } else {
+    ready();
+  }
+
+  function ready() {
+    fetchTodos();
+    let addBtn = locateById("add");
+    let removeBntn = locateById('remove');
+    addBtn.addEventListener("click", addTodo);
+    remove.addEventListener('click', removeTodos)
+    document.addEventListener("keypress", checkKeyPress);
+    document.body.addEventListener('click', updateState)
+  }
+  function checkKeyPress(event) {
+    if (event.keyCode == 13) {
+      addTodo();
+    }
+  }
+
+  function removeTodos() {
+    let list = document.getElementById('todo-list');
+    let len = list.children.length;
+    for (let i = 0; i < len; i += 1) {
+      let curChild = list.children[i];
+      if (curChild.classList.contains('doneTodo')) {
+        curChild.remove();
+        len -= 1;
+        i = 0;
+      }
+    }
+    if (list.children[0]) {
+
+      if (list.children[0].classList.contains('doneTodo')) {
+        list.children[0].remove()
+      }
+    }
+    storeTodos();
+  }
+  function fetchTodos() {
+    let todos = []
+    if (localStorage.getItem("todos")) {
+      todos = JSON.parse(localStorage.getItem('todos'))
+    }
+    let len = todos.length;
+    if (len > 0) {
+      let list = locateById("todo-list");
+      for (let i = 0; i < len; i++) {
+        let newItem = document.createElement("li");
+        newItem.className = "list-item";
+        if (todos[i].isDone === true) {
+          newItem.classList.add('doneTodo');
+        }
+        newItem.innerHTML = `${todos[i].text}`;
+        list.appendChild(newItem);
+      }
+      storeTodos();
+    }
+  }
+  function addTodo() {
+    let newItem = document.createElement("li");
+    newItem.className = "list-item";
+    let item = {};
+
+    if (locateById("todo").value !== "") {
+      item.text = locateById("todo").value;
+      item.isDone = false;
+      newItem.innerHTML = `${item.text}`;
+      let list = locateById("todo-list");
+      list.insertBefore(newItem, list.firstChild);
+      locateById("todo").value = "";
+      storeTodos();
+    } else {
+      alert("Enter a To do First");
+    }
+  }
+
+  function storeTodos() {
+    let list = locateById("todo-list");
+    let len = list.children.length;
+    let listArr = [];
+    for (let i = 0; i < len; i++) {
+      let todo = {};
+      todo.text = list.children[i].textContent;
+      if (list.children[i].classList.contains('doneTodo'))
+        todo.isDone = true;
+      else
+        todo.isDone = false;
+      listArr.push(todo);
+    }
+    localStorage.setItem("todos", JSON.stringify(listArr));
+  }
+
+  function updateState(e) {
+    if (e.target.classList.contains('doneTodo')) {
+      e.target.classList.remove('doneTodo');
+      e.target.remove();
+      // locateById('todo-list').appendChild(e.target)
+      let list = locateById('todo-list');
+      list.insertBefore(e.target, list.childNodes[0]);
+      storeTodos();
+
+    }
+    else if (e.target.classList.contains('list-item')) {
+      e.target.classList.add('doneTodo')
+      e.target.remove();
+      locateById('todo-list').appendChild(e.target)
+
+      storeTodos();
+    }
+
+  }
+  function locateById(id) {
+    return document.getElementById(id);
+  }
+</script>
+
 </html>
